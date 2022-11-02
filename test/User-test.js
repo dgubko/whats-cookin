@@ -18,16 +18,4 @@ describe("User", () => {
     expect(user1.id).to.equal(1);
     expect(user2.id).to.equal(2);
   });
-
-  it("should have ingredients in pantry", () => {
-    expect(user1.pantry).to.deep.equal([
-      { ingredient: 11297, amount: 4 },
-      { ingredient: 1082047, amount: 10 },
-    ]);
-
-    expect(user2.pantry).to.deep.equal([
-      { ingredient: 6150, amount: 3 },
-      { ingredient: 1032009, amount: 7 },
-    ]);
-  });
 });
