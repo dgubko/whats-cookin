@@ -55,16 +55,16 @@ const mockUsers = [
     name: "Saige O'Kon",
     id: 1,
     pantry: [
-      { ingredient: 11297, amount: 4 },
-      { ingredient: 1082047, amount: 10 },
+      { ingredient: 20081, amount: 4 },
+      { ingredient: 18372, amount: 10 },
     ],
   },
   {
     name: "Ephraim Goyette",
     id: 2,
     pantry: [
-      { ingredient: 6150, amount: 3 },
-      { ingredient: 1032009, amount: 7 },
+      { ingredient: 1009016, amount: 3 },
+      { ingredient: 9003, amount: 7 },
     ],
   },
 ];
