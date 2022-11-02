@@ -41,4 +41,28 @@ describe("Ingredient", () => {
   it("should count an estimated cost", () => {
     expect(ingredient.countEstCost()).to.equal(213);
   });
+
+  it("should return amount", () => {
+    expect(ingredient.getAmount()).to.equal(1.5);
+  });
+
+  it("should return units if present", () => {
+    expect(ingredient.getUnit()).to.equal("c");
+  });
+
+  it("should return default unit", () => {
+    ingredient = new Ingredient(ingredientRow, {
+      amount: 1.5,
+      unit: "",
+    });
+    expect(ingredient.getUnit()).to.equal("pc");
+  });
+
+  it("should return amount of ingredient needed as a positive number if not enough", () => {
+    expect(ingredient.getMissingAmount(5)).to.equal(3.5);
+  });
+
+  it("should return amount of ingredient needed as negative if enough", () => {
+    expect(ingredient.getMissingAmount(1)).to.equal(-0.5);
+  });
 });
