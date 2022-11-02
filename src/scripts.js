@@ -49,8 +49,14 @@ myRecipesButton.addEventListener("click", viewMyRecipes);
 allImages.forEach((image) => {
   image.addEventListener("click", seeRecipe);
 });
+allImages.forEach((image) => {
+  image.addEventListener("keypress", seeRecipe);
+});
 allMiniImages.forEach((image) => {
   image.addEventListener("click", seeRecipe);
+});
+allMiniImages.forEach((image) => {
+  image.addEventListener("keypress", seeRecipe);
 });
 
 // myRecipeSearch.addEventListener("click", searchMyRecipeNames);
