@@ -49,11 +49,16 @@ myRecipesButton.addEventListener("click", viewMyRecipes);
 allImages.forEach((image) => {
   image.addEventListener("click", seeRecipe);
 });
+allImages.forEach((image) => {
+  image.addEventListener("keypress", seeRecipe);
+});
 allMiniImages.forEach((image) => {
   image.addEventListener("click", seeRecipe);
 });
+allMiniImages.forEach((image) => {
+  image.addEventListener("keypress", seeRecipe);
+});
 
-// myRecipeSearch.addEventListener("click", searchMyRecipeNames);
 allSearchButtons.forEach((button) => {
   button.addEventListener("click", searchForRecipes);
 });
@@ -141,17 +146,17 @@ function viewAllRecipes(recipes) {
     const newSection = document.createElement("section");
     newSection.className = "recipe-card-container";
     newSection.innerHTML = `
-        <img class="image" id="${recipe.id}" src="${recipe.image}">
+        <img tabindex="0" class="image" id="${recipe.id}" src="${recipe.image}">
         <p class="recipe-name"> ${recipe.name} </p>`;
 
     allRecipesContainer.appendChild(newSection);
     const recipeImage = newSection.querySelector(".image");
     recipeImage.addEventListener("click", seeRecipe);
+    recipeImage.addEventListener("keypress", seeRecipe);
   });
   allSearchForm.elements.search.value = ""
   userSearchForm.elements.search.value = ""
   renderTags()
-  // allTagSelect.value = ""
 }
 
 function searchForRecipes(event) {
@@ -190,7 +195,7 @@ function renderRecipe(recipe) {
   const newSection = document.createElement("section");
   newSection.className = "recipe-details";
   newSection.innerHTML += `<h2>${recipe.name}</h2>`;
-  newSection.innerHTML += `<img class="image" id="${recipe.id}" src="${recipe.image}">`;
+  newSection.innerHTML += `<img tabindex="0" class="image" id="${recipe.id}" src="${recipe.image}">`;
   newSection.innerHTML += renderIngredients(recipe.ingredients);
   newSection.innerHTML += renderInstructions(recipe.instructions);
   newSection.innerHTML += `<p>Estimated cost: ${recipe.getCost()} dollars</p>
@@ -198,6 +203,7 @@ function renderRecipe(recipe) {
   currentRecipeContainer.appendChild(newSection);
   const recipeImage = newSection.querySelector(".image");
   recipeImage.addEventListener("click", seeRecipe);
+  recipeImage.addEventListener("keypress", seeRecipe);
   const saveRecipeButton = newSection.querySelector(".save-recipe-button");
   const alreadySaved = newUserList.recipesToCook.map(thisRecipe => {
     return thisRecipe.name
@@ -255,13 +261,14 @@ function saveRecipe() {
     const newSection = document.createElement("section");
     newSection.className = "recipe-card-container";
     newSection.innerHTML = `
-        <img class="image" id="${recipe.id}" src="${recipe.image}">
+        <img tabindex="0" class="image" id="${recipe.id}" src="${recipe.image}">
         <button class="delete-recipe" id="${recipe.id}">Delete Recipe</button>
         <p class="recipe-name"> ${recipe.name} </p>`;
 
     savedRecipeContainer.appendChild(newSection);
     const recipeImage = newSection.querySelector(".image");
     recipeImage.addEventListener("click", seeRecipe);
+    recipeImage.addEventListener("keypress", seeRecipe);
     const deleteRecipeButtons = newSection.querySelectorAll(".delete-recipe");
     deleteRecipeButtons.forEach((button) => {
       button.addEventListener("click", deleteRecipe);
