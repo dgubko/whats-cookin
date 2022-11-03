@@ -137,9 +137,9 @@ function renderPage() {
 //       renderTags();
 //       selectRandomUser();
 //     })
-//     .catch((err) => console.log(err));
-// }
-//
+    .catch((err) => console.log(err));
+}
+
 // function loadPage() {
 //   getData();
 // }
