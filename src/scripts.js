@@ -38,7 +38,7 @@ const allImages = document.querySelectorAll(".image");
 const allMiniImages = document.querySelectorAll(".mini-image");
 
 //event listeners go here
-window.addEventListener("load", loadPage);
+window.addEventListener("load", renderPage);
 recipesButton.addEventListener("click", renderAllRecipesPage);
 homeButton.addEventListener("click", returnHome);
 myRecipesButton.addEventListener("click", viewMyRecipes);
@@ -57,8 +57,12 @@ allSearchButtons.forEach((button) => {
 
 allTagSelect.addEventListener("change", searchAllRecipesByTag);
 userTagSelect.addEventListener("change", searchUserRecipesByTag);
-
-//event handlers go here
+//----Post Event Listener
+//add a button to html so user can add ingredients
+//add button to remove ingredients
+// create query selectors for both in scripts
+addInfoButton.addEventListener("click", updateInfo)
+removeInfoButton.addEventListener("click", updateInfo)
 /*
 What->
 get data from apiCalls
@@ -71,6 +75,7 @@ create functions for each fetch call
  then turns that returned value into an instance of that class
 seperate getData function logic into smaller functions
 */
+//event handlers go here
 function getAllData() {
   getUsersData()
   getRecipeData()
@@ -105,8 +110,8 @@ function getAllData() {
     .catch((err) => console.log(err));
 }
 
-function loadPage() {
-  getData();
+function renderPage() {
+  getData()
   renderTags()
   selectRandomUser()
 }
@@ -138,6 +143,17 @@ function loadPage() {
 // function loadPage() {
 //   getData();
 // }
+//----Post Event Handler
+function updateInfo() {
+  postData()
+  .then(() => {
+      getUsersData()
+      .then(fetchedUsers => {
+        console.log('We Have Users!' fetchedUsers)
+        renderPage()
+      })
+  })
+}
 
 function renderTags() {
   const tags = recipeRepository.getAllTags();
