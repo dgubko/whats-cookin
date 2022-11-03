@@ -9,6 +9,7 @@ class Recipe {
     this.instructions = recipe.instructions;
     this.tags = recipe.tags;
   }
+
   retrieveIngredients(ingredientsData) {
     this.ingredients = this.ingredients.map((item) => {
       const element = ingredientsData.find((ingr) => ingr.id === item.id);
