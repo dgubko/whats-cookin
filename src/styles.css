@@ -1,5 +1,5 @@
 body {
-  background-color: lightgray; 
+  background-color: #88BDBC; 
   font-family:'Trebuchet MS', 'Lucida Sans Unicode', 'Lucida Grande', 'Lucida Sans', Arial, sans-serif;
   display: flex;
   flex-direction: column;
@@ -7,21 +7,21 @@ body {
 }
 
 .all-recipes-page {
-  background-color: lightgray; 
+  background-color: #88BDBC; 
   font-family:'Trebuchet MS', 'Lucida Sans Unicode', 'Lucida Grande', 'Lucida Sans', Arial, sans-serif;
   display: flex;
   flex-direction: column;
 }
 
 .saved-recipes-page {
-  background-color: lightgray; 
+  background-color: #88BDBC; 
   font-family:'Trebuchet MS', 'Lucida Sans Unicode', 'Lucida Grande', 'Lucida Sans', Arial, sans-serif;
   display: flex;
   flex-direction: column;
 }
 
 #all-recipes-container {
-  background-color: azure;
+  background-color: #efcb8d;
   display: flex;
 	flex-direction: row;
 	flex-wrap: wrap;
@@ -29,10 +29,11 @@ body {
 	align-items: stretch;
 	align-content: center;
   border: solid, 4px, black;
+  padding-top: 20px;
 }
 
 #saved-recipe-card-container {
-  background-color: azure;
+  background-color: #efcb8d;
   display: flex;
 	flex-direction: row;
 	flex-wrap: wrap;
@@ -40,6 +41,7 @@ body {
 	align-items: stretch;
 	align-content: center;
   border: solid, 4px, black;
+  padding-top: 20px;
 }
 
 .delete-recipe {
@@ -80,7 +82,6 @@ header {
 .image {
   height: 30vh;
   width: 20vw;
-  padding-top: 5%;
   cursor: pointer;
   border-radius: 30px;
 }
@@ -91,17 +92,15 @@ header {
 }
 
 .featured-container {
-  background-color: azure;
+  background-color: #efcb8d;
   display: flex;
   flex-direction: row;
   justify-content: space-around;
   height: 50vh;
-  width: 100vw;
-  border-radius: 10px;
 }
 
 #current-recipe-id {
-  background-color: azure;
+  background-color: #efcb8d;
 }
 
 .recipe-details {
@@ -113,7 +112,7 @@ header {
 
 .featured-recipes {
   font-family:'Trebuchet MS', 'Lucida Sans Unicode', 'Lucida Grande', 'Lucida Sans', Arial, sans-serif;
-  background-color: azure;
+  background-color: #efcb8d;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -131,7 +130,7 @@ header {
 }
 
 .main-container {
-  background-color: bisque;
+  background-color: #efcb8d;
   display: flex;
   flex-direction: row;
   align-items: center;
@@ -139,7 +138,7 @@ header {
 }
 
 .popular-favorites-container {
-  background-color: azure;
+  background-color: #efcb8d;
   background-size: cover;
   display: flex;
 	flex-direction: row;
@@ -158,7 +157,7 @@ header {
   align-items: center;
 	justify-content: space-around;
 	align-content: space-around;
-  background-color: azure;
+  background-color: #efcb8d;
   height: 50vh;
   width: 40vw;
 }
