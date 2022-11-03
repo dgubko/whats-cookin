@@ -1,8 +1,5 @@
 import "./styles.css";
-import {
-  getUsersAPIData,
-  getRecipesAPIData,
-  getIngredientsAPIData,
+import {usersUrl, ingredientsUrl, recipesUrl, andThen, getUsersData, getIngredientsData, getRecipeData, postData
 } from "./apiCalls";
 import "./images/turing-logo.png";
 import Recipe from "./classes/Recipe";
@@ -10,9 +7,9 @@ import RecipeRepository from "./classes/RecipeRepository";
 import UserRepo from "./classes/UserRepo";
 import User from "./classes/User";
 import UserList from "./classes/UserList";
+import Ingredients from "./classes/Ingredients"
 
-let allRecipes, recipeRepository, currentUser, userRepo, newUserList;
-
+let currentUser, usersData, userRepo, recipesData, recipeRepository, recipe, userList, ingredientsData, ingredients
 //query selectors go here
 //pages
 const homePage = document.querySelector(".home-page");
@@ -62,34 +59,85 @@ allTagSelect.addEventListener("change", searchAllRecipesByTag);
 userTagSelect.addEventListener("change", searchUserRecipesByTag);
 
 //event handlers go here
-function getData() {
-  Promise.all([getUsersAPIData, getRecipesAPIData, getIngredientsAPIData])
-    .then((data) => {
-      const usersAPIData = data[0].usersData;
-      const recipesAPIData = data[1].recipeData;
-      const ingredientsAPIData = data[2].ingredientsData;
+/*
+What->
+get data from apiCalls
+instantiate classes
+update the DOM
 
-      allRecipes = recipesAPIData
-        .map((recipe) => {
-          const newRecipe = new Recipe(recipe);
-          newRecipe.retrieveIngredients(ingredientsAPIData);
-          return newRecipe;
-        })
-        .sort((a, b) => {
-          return a.name > b.name ? 1 : -1;
-        });
-      recipeRepository = new RecipeRepository(allRecipes);
-      userRepo = new UserRepo(usersAPIData);
+How->
+create functions for each fetch call
+ that invokes each fetch call
+ then turns that returned value into an instance of that class
+seperate getData function logic into smaller functions
+*/
+function getAllData() {
+  getUsersData()
+  getRecipeData()
+  getIngredientsData()
+  Promise.all([fetchedUsers, fetchedRecipes, fetchedIngredients])
+    .then((data) => {
+      usersData = data[0].usersData;
+      recipeData = data[1].recipeData;
+      ingredientsData = data[2].ingredientsData;
+
+      // allRecipes = recipesAPIData
+      //   .map((recipe) => {
+      //     const newRecipe = new Recipe(recipe);
+      //     newRecipe.retrieveIngredients(ingredientsAPIData);
+          //^^ this method should not be taking in the ingredients
+          //data directly,
+          //we should be creating an instance of the Ingredients class and passing the data into that
+          //currently, the Ingredients Class has 2 arguments
+          // I think it should have 1, our data
+        //   return newRecipe;
+        // })
+        // .sort((a, b) => {
+        //   return a.name > b.name ? 1 : -1;
+        // });
+      ingredients = new Ingredients(ingredientsData)
+      recipeRepository = new RecipeRepository(recipeData);
+      userRepo = new UserRepo(usersData);
       newUserList = new UserList();
-      renderTags();
-      selectRandomUser();
+      // renderTags();
+      // selectRandomUser();
     })
     .catch((err) => console.log(err));
 }
 
 function loadPage() {
   getData();
+  renderTags()
+  selectRandomUser()
 }
+// function getData() {
+//   Promise.all([getUsersAPIData, getRecipesAPIData, getIngredientsAPIData])
+//     .then((data) => {
+//       const usersAPIData = data[0].usersData;
+//       const recipesAPIData = data[1].recipeData;
+//       const ingredientsAPIData = data[2].ingredientsData;
+//
+//       allRecipes = recipesAPIData
+//         .map((recipe) => {
+//           const newRecipe = new Recipe(recipe);
+//           newRecipe.retrieveIngredients(ingredientsAPIData);
+//           return newRecipe;
+//         })
+//         .sort((a, b) => {
+//           return a.name > b.name ? 1 : -1;
+//         });
+//       recipeRepository = new RecipeRepository(allRecipes);
+//       userRepo = new UserRepo(usersAPIData);
+//       newUserList = new UserList();
+//       renderTags();
+//       selectRandomUser();
+//     })
+//     .catch((err) => console.log(err));
+// }
+//
+// function loadPage() {
+//   getData();
+// }
 
 function renderTags() {
   const tags = recipeRepository.getAllTags();
@@ -130,7 +178,7 @@ function viewAllRecipes(recipes) {
   addHidden(savedRecipePage);
   removeHidden(homeButton);
   removeHidden(myRecipesButton);
-  
+
 
   allRecipesContainer.innerHTML = "";
   if (!recipes.length) {
@@ -194,7 +242,7 @@ function renderRecipe(recipe) {
   newSection.innerHTML += renderIngredients(recipe.ingredients);
   newSection.innerHTML += renderInstructions(recipe.instructions);
   newSection.innerHTML += `<p>Estimated cost: ${recipe.getCost()} dollars</p>
-  <button class="save-recipe-button" id="${recipe.id}"> Save Recipe </button>`;  
+  <button class="save-recipe-button" id="${recipe.id}"> Save Recipe </button>`;
   currentRecipeContainer.appendChild(newSection);
   const recipeImage = newSection.querySelector(".image");
   recipeImage.addEventListener("click", seeRecipe);
