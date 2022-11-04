@@ -35,7 +35,7 @@ function postData() {
     headers: { 'content-type': 'application/json'}
   })
     .then(res => res.json())
-    .then(res => console.log(res))
+    // .then(res => console.log(res))
     .catch(err => console.log('To err is human', err))
   return postedData
 }

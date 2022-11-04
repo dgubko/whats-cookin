@@ -38,7 +38,7 @@ const allImages = document.querySelectorAll(".image");
 const allMiniImages = document.querySelectorAll(".mini-image");
 
 //event listeners go here
-window.addEventListener("load", renderPage);
+window.addEventListener("load", getAllData);
 recipesButton.addEventListener("click", renderAllRecipesPage);
 homeButton.addEventListener("click", returnHome);
 myRecipesButton.addEventListener("click", viewMyRecipes);
@@ -86,16 +86,6 @@ function getAllData() {
       usersData = data[0];
       recipesData = data[1];
       ingredientsData = data[2]; 
-      // allRecipes = recipesAPIData
-      //   .map((recipe) => {
-      //     const newRecipe = new Recipe(recipe);
-      //     newRecipe.retrieveIngredients(ingredientsAPIData);
-          //^^ this method should not be taking in the ingredients
-          //data directly,
-          //we should be creating an instance of the Ingredients class and passing the data into that
-          //currently, the Ingredients Class has 2 arguments
-          // I think it should have 1, our data
-        //   return newRecipe;
       const allRecipes = recipesData.map((recipe) => {
         const newRecipe = new Recipe(recipe);
         newRecipe.retrieveIngredients(ingredientsData);
@@ -108,43 +98,12 @@ function getAllData() {
       recipeRepository = new RecipeRepository(allRecipes);
       userRepo = new UserRepo(usersData);
       userList = new UserList();
+      renderTags()
+      selectRandomUser()
     })
     .catch((err) => console.log(err));
 }
 
-function renderPage() {
-  getAllData()
-  renderTags()
-  selectRandomUser()
-}
-// function getData() {
-//   Promise.all([getUsersAPIData, getRecipesAPIData, getIngredientsAPIData])
-//     .then((data) => {
-//       const usersAPIData = data[0].usersData;
-//       const recipesAPIData = data[1].recipeData;
-//       const ingredientsAPIData = data[2].ingredientsData;
-
-//       allRecipes = recipesAPIData
-//         .map((recipe) => {
-//           const newRecipe = new Recipe(recipe);
-//           newRecipe.retrieveIngredients(ingredientsAPIData);
-//           return newRecipe;
-//         })
-//         .sort((a, b) => {
-//           return a.name > b.name ? 1 : -1;
-//         });
-//       recipeRepository = new RecipeRepository(allRecipes);
-//       userRepo = new UserRepo(usersAPIData);
-//       newUserList = new UserList();
-//       renderTags();
-//       selectRandomUser();
-//     })
-//    .catch((err) => console.log(err));
-// }
-
-// function loadPage() {
-//   getData();
-// }
 //----Post Event Handler
 function updateInfo() {
   postData()
@@ -229,7 +188,7 @@ function searchForRecipes(event) {
     filteredElements = recipeRepository.filterByName(inputValue);
   } else {
     const inputValue = userSearchForm.elements.search.value;
-    filteredElements = newUserList.filterByName(inputValue);
+    filteredElements = userList.filterByName(inputValue);
   }
   viewAllRecipes(filteredElements);
 
@@ -266,7 +225,7 @@ function renderRecipe(recipe) {
   recipeImage.addEventListener("click", seeRecipe);
   recipeImage.addEventListener("keypress", seeRecipe);
   const saveRecipeButton = newSection.querySelector(".save-recipe-button");
-  const alreadySaved = newUserList.recipesToCook.map(thisRecipe => {
+  const alreadySaved = userList.recipesToCook.map(thisRecipe => {
     return thisRecipe.name
   })
   if(alreadySaved.includes(recipe.name)){
@@ -306,11 +265,11 @@ function addToSavedRecipe(event) {
   const newSavedRecipe = recipeRepository.newRecipes.find((recipe) => {
     return parseInt(event.target.id) === recipe.id;
   });
-  const existingData = newUserList.recipesToCook.find((recipe) => {
+  const existingData = userList.recipesToCook.find((recipe) => {
     return newSavedRecipe.id === recipe.id;
   });
   if (!existingData) {
-    newUserList.recipesToCook.push(newSavedRecipe);
+    userList.recipesToCook.push(newSavedRecipe);
   }
   saveRecipe();
 }
@@ -318,7 +277,7 @@ function addToSavedRecipe(event) {
 function saveRecipe() {
   viewMyRecipes();
   savedRecipeContainer.innerHTML = "";
-  newUserList.recipesToCook.forEach((recipe) => {
+  userList.recipesToCook.forEach((recipe) => {
     const newSection = document.createElement("section");
     newSection.className = "recipe-card-container";
     newSection.innerHTML = `
@@ -338,13 +297,13 @@ function saveRecipe() {
 }
 
 function deleteRecipe(event) {
-  const removeRecipe = newUserList.recipesToCook.find((recipe) => {
+  const removeRecipe = userList.recipesToCook.find((recipe) => {
     return parseInt(event.target.id) === recipe.id;
   });
-  const indexNumber = newUserList.recipesToCook.indexOf(removeRecipe);
-  newUserList.recipesToCook.splice(indexNumber, 1);
+  const indexNumber = userList.recipesToCook.indexOf(removeRecipe);
+  userList.recipesToCook.splice(indexNumber, 1);
   saveRecipe();
-  if (!newUserList.recipesToCook.length) {
+  if (!userList.recipesToCook.length) {
     savedRecipeContainer.innerHTML = "<p>Nothing to show!😕</p>";
     return;
   }
@@ -369,7 +328,7 @@ function viewMyRecipes() {
   removeHidden(savedRecipePage);
   changeToUserInputs();
   headerTitle.innerText = "Recipes to Cook";
-  if (!newUserList.recipesToCook.length) {
+  if (!userList.recipesToCook.length) {
     savedRecipeContainer.innerHTML = "<p>Nothing to show!😕</p>";
     return;
   }
