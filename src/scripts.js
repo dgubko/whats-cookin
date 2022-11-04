@@ -1,5 +1,5 @@
 import "./styles.css";
-import {usersUrl, ingredientsUrl, recipesUrl, andThen, getUsersData, getIngredientsData, getRecipeData, postData
+import {fetchedIngredients, fetchedRecipes, fetchedUsers, postData
 } from "./apiCalls";
 import "./images/turing-logo.png";
 import Recipe from "./classes/Recipe";
@@ -7,9 +7,9 @@ import RecipeRepository from "./classes/RecipeRepository";
 import UserRepo from "./classes/UserRepo";
 import User from "./classes/User";
 import UserList from "./classes/UserList";
-import Ingredients from "./classes/Ingredients"
+import Ingredient from "./classes/Ingredient";
 
-let currentUser, usersData, userRepo, recipesData, recipeRepository, recipe, userList, ingredientsData, ingredients
+let currentUser, usersData, userRepo, recipesData, recipeRepository, recipe, userList, ingredientsData, ingredient
 //query selectors go here
 //pages
 const homePage = document.querySelector(".home-page");
@@ -60,14 +60,12 @@ allSearchButtons.forEach((button) => {
   button.addEventListener("click", searchForRecipes);
 });
 
+
+
 allTagSelect.addEventListener("change", searchAllRecipesByTag);
 userTagSelect.addEventListener("change", searchUserRecipesByTag);
-//----Post Event Listener
-//add a button to html so user can add ingredients
-//add button to remove ingredients
-// create query selectors for both in scripts
-addInfoButton.addEventListener("click", updateInfo)
-removeInfoButton.addEventListener("click", updateInfo)
+// addInfoButton.addEventListener("click", updateInfo)
+// removeInfoButton.addEventListener("click", updateInfo)
 /*
 What->
 get data from apiCalls
@@ -81,16 +79,16 @@ create functions for each fetch call
 seperate getData function logic into smaller functions
 */
 //event handlers go here
+
 function getAllData() {
-  getUsersData()
-  getRecipeData()
-  getIngredientsData()
+  console.log(fetchedUsers);
   Promise.all([fetchedUsers, fetchedRecipes, fetchedIngredients])
     .then((data) => {
-      usersData = data[0].usersData;
-      recipeData = data[1].recipeData;
-      ingredientsData = data[2].ingredientsData;
-
+      console.log(data);
+      const usersApiData = data[0];
+      const recipesApiData = data[1];
+      const ingredientsApiData = data[2];
+    
       // allRecipes = recipesAPIData
       //   .map((recipe) => {
       //     const newRecipe = new Recipe(recipe);
@@ -101,22 +99,26 @@ function getAllData() {
           //currently, the Ingredients Class has 2 arguments
           // I think it should have 1, our data
         //   return newRecipe;
-        // })
-        // .sort((a, b) => {
-        //   return a.name > b.name ? 1 : -1;
-        // });
-      ingredients = new Ingredients(ingredientsData)
-      recipeRepository = new RecipeRepository(recipeData);
-      userRepo = new UserRepo(usersData);
-      newUserList = new UserList();
-      // renderTags();
-      // selectRandomUser();
+        allRecipes = recipesApiData.map((recipe) => {
+                  const newRecipe = new Recipe(recipe);
+                  newRecipe.retrieveIngredients(ingredientsApiData);
+                  return newRecipe;
+                })
+                .sort((a, b) => {
+                  return a.name > b.name ? 1 : -1;
+                });
+      // ingredients = new Ingredients(ingredientsData)
+      console.log("hello");
+      recipeRepository = new RecipeRepository(allRecipes);
+      console.log(recipeRepository);
+      userRepo = new UserRepo(usersApiData);
+      userList = new UserList();
     })
     .catch((err) => console.log(err));
 }
 
 function renderPage() {
-  getData()
+  getAllData()
   renderTags()
   selectRandomUser()
 }
@@ -126,7 +128,7 @@ function renderPage() {
 //       const usersAPIData = data[0].usersData;
 //       const recipesAPIData = data[1].recipeData;
 //       const ingredientsAPIData = data[2].ingredientsData;
-//
+
 //       allRecipes = recipesAPIData
 //         .map((recipe) => {
 //           const newRecipe = new Recipe(recipe);
@@ -142,8 +144,8 @@ function renderPage() {
 //       renderTags();
 //       selectRandomUser();
 //     })
-    .catch((err) => console.log(err));
-}
+//    .catch((err) => console.log(err));
+// }
 
 // function loadPage() {
 //   getData();
@@ -154,7 +156,7 @@ function updateInfo() {
   .then(() => {
       getUsersData()
       .then(fetchedUsers => {
-        console.log('We Have Users!' fetchedUsers)
+        console.log('We Have Users!', fetchedUsers)
         renderPage()
       })
   })

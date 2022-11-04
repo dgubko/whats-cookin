@@ -14,29 +14,21 @@ const recipesUrl = 'http://localhost:3001/api/v1/recipes'
 //   ingredientModification: -1
 // }
 
-function andThen() {
-  .then(res => res.json())
-  .then(res => console.log(res))
+function getApiData(url) {
+  let fetchedApi = fetch(url)
+  .then((res) => res.json())
+  .then((res) => console.log(res))
   .catch(err => console.log('To err is human', err))
+  // andThen()
+  console.log(fetchedApi);
+  return fetchedApi
 }
 
-function getUsersData() {
-  let fetchedUsers = fetch(usersUrl)
-    andThen()
-    return fetchedUsers
-}
+const fetchedUsers = getApiData(usersUrl)
+const fetchedRecipes = getApiData(recipesUrl)
+const fetchedIngredients = getApiData(ingredientsUrl)
 
-function getIngredientsData() {
-  let fetchedIngredients = fetch(ingredientsUrl)
-    andThen()
-    return fetchedIngredients
-}
 
-function getRecipeData() {
-  let fetchedRecipes = fetch(recipesUrl)
-    andThen()
-    return fetchedRecipes
-}
 
 function postData() {
   let postedData = fetch(usersUrl, {
@@ -44,7 +36,9 @@ function postData() {
     body: JSON.stringify(samplePostProperties),
     headers: { 'content-type': 'application/json'}
   })
-  andThen()
+  .then(res => res.json())
+  .then(res => console.log(res))
+  .catch(err => console.log('To err is human', err))
   return postedData
 }
 
@@ -58,4 +52,5 @@ function postData() {
 //   return deletedData
 // }
 
-export {usersUrl, ingredientsUrl, recipesUrl, andThen, getUsersData, getIngredientsData, getRecipeData, postData}
+export {usersUrl, ingredientsUrl, recipesUrl, fetchedIngredients, fetchedRecipes, fetchedUsers, postData}
+// getUsersData, getIngredientsData, getRecipeData
