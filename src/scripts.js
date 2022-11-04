@@ -81,14 +81,11 @@ seperate getData function logic into smaller functions
 //event handlers go here
 
 function getAllData() {
-  console.log(fetchedUsers);
   Promise.all([fetchedUsers, fetchedRecipes, fetchedIngredients])
     .then((data) => {
-      console.log(data);
-      const usersApiData = data[0];
-      const recipesApiData = data[1];
-      const ingredientsApiData = data[2];
-    
+      usersData = data[0];
+      recipesData = data[1];
+      ingredientsData = data[2]; 
       // allRecipes = recipesAPIData
       //   .map((recipe) => {
       //     const newRecipe = new Recipe(recipe);
@@ -99,19 +96,17 @@ function getAllData() {
           //currently, the Ingredients Class has 2 arguments
           // I think it should have 1, our data
         //   return newRecipe;
-        allRecipes = recipesApiData.map((recipe) => {
-                  const newRecipe = new Recipe(recipe);
-                  newRecipe.retrieveIngredients(ingredientsApiData);
-                  return newRecipe;
-                })
-                .sort((a, b) => {
-                  return a.name > b.name ? 1 : -1;
-                });
-      // ingredients = new Ingredients(ingredientsData)
-      console.log("hello");
+      const allRecipes = recipesData.map((recipe) => {
+        const newRecipe = new Recipe(recipe);
+        newRecipe.retrieveIngredients(ingredientsData);
+        return newRecipe;
+      })
+      .sort((a, b) => {
+        return a.name > b.name ? 1 : -1;
+      });      
+      ingredient = new Ingredient(ingredientsData)
       recipeRepository = new RecipeRepository(allRecipes);
-      console.log(recipeRepository);
-      userRepo = new UserRepo(usersApiData);
+      userRepo = new UserRepo(usersData);
       userList = new UserList();
     })
     .catch((err) => console.log(err));
@@ -178,7 +173,7 @@ function searchAllRecipesByTag(event) {
 
 function searchUserRecipesByTag(event) {
   const tagValue = event.target.value;
-  const filteredRecipes = newUserList.filterByTag(tagValue);
+  const filteredRecipes = userList.filterByTag(tagValue);
   viewAllRecipes(filteredRecipes);
 }
 

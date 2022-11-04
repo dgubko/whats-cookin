@@ -15,12 +15,10 @@ const recipesUrl = 'http://localhost:3001/api/v1/recipes'
 // }
 
 function getApiData(url) {
-  let fetchedApi = fetch(url)
-  .then((res) => res.json())
-  .then((res) => console.log(res))
-  .catch(err => console.log('To err is human', err))
-  // andThen()
-  console.log(fetchedApi);
+  const fetchedApi = fetch(url)
+    .then((res) => res.json())
+    // .then((res) => console.log(res))
+    .catch(err => console.log('To err is human', err))
   return fetchedApi
 }
 
@@ -36,9 +34,9 @@ function postData() {
     body: JSON.stringify(samplePostProperties),
     headers: { 'content-type': 'application/json'}
   })
-  .then(res => res.json())
-  .then(res => console.log(res))
-  .catch(err => console.log('To err is human', err))
+    .then(res => res.json())
+    .then(res => console.log(res))
+    .catch(err => console.log('To err is human', err))
   return postedData
 }
 
