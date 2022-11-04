@@ -1,5 +1,5 @@
 import "./styles.css";
-import {usersUrl, ingredientsUrl, recipesUrl, andThen, getUsersData, getIngredientsData, getRecipeData, postData
+import {fetchedIngredients, fetchedRecipes, fetchedUsers, postData
 } from "./apiCalls";
 import "./images/turing-logo.png";
 import Recipe from "./classes/Recipe";
@@ -7,9 +7,9 @@ import RecipeRepository from "./classes/RecipeRepository";
 import UserRepo from "./classes/UserRepo";
 import User from "./classes/User";
 import UserList from "./classes/UserList";
-import Ingredients from "./classes/Ingredients"
+import Ingredient from "./classes/Ingredient";
 
-let currentUser, usersData, userRepo, recipesData, recipeRepository, recipe, userList, ingredientsData, ingredients
+let currentUser, usersData, userRepo, recipesData, recipeRepository, recipe, userList, ingredientsData, ingredient
 //query selectors go here
 //pages
 const homePage = document.querySelector(".home-page");
@@ -38,7 +38,7 @@ const allImages = document.querySelectorAll(".image");
 const allMiniImages = document.querySelectorAll(".mini-image");
 
 //event listeners go here
-window.addEventListener("load", renderPage);
+window.addEventListener("load", getAllData);
 recipesButton.addEventListener("click", renderAllRecipesPage);
 homeButton.addEventListener("click", returnHome);
 myRecipesButton.addEventListener("click", viewMyRecipes);
@@ -60,14 +60,12 @@ allSearchButtons.forEach((button) => {
   button.addEventListener("click", searchForRecipes);
 });
 
+
+
 allTagSelect.addEventListener("change", searchAllRecipesByTag);
 userTagSelect.addEventListener("change", searchUserRecipesByTag);
-//----Post Event Listener
-//add a button to html so user can add ingredients
-//add button to remove ingredients
-// create query selectors for both in scripts
-addInfoButton.addEventListener("click", updateInfo)
-removeInfoButton.addEventListener("click", updateInfo)
+// addInfoButton.addEventListener("click", updateInfo)
+// removeInfoButton.addEventListener("click", updateInfo)
 /*
 What->
 get data from apiCalls
@@ -81,80 +79,38 @@ create functions for each fetch call
 seperate getData function logic into smaller functions
 */
 //event handlers go here
+
 function getAllData() {
-  getUsersData()
-  getRecipeData()
-  getIngredientsData()
   Promise.all([fetchedUsers, fetchedRecipes, fetchedIngredients])
     .then((data) => {
-      usersData = data[0].usersData;
-      recipeData = data[1].recipeData;
-      ingredientsData = data[2].ingredientsData;
-
-      // allRecipes = recipesAPIData
-      //   .map((recipe) => {
-      //     const newRecipe = new Recipe(recipe);
-      //     newRecipe.retrieveIngredients(ingredientsAPIData);
-          //^^ this method should not be taking in the ingredients
-          //data directly,
-          //we should be creating an instance of the Ingredients class and passing the data into that
-          //currently, the Ingredients Class has 2 arguments
-          // I think it should have 1, our data
-        //   return newRecipe;
-        // })
-        // .sort((a, b) => {
-        //   return a.name > b.name ? 1 : -1;
-        // });
-      ingredients = new Ingredients(ingredientsData)
-      recipeRepository = new RecipeRepository(recipeData);
+      usersData = data[0];
+      recipesData = data[1];
+      ingredientsData = data[2]; 
+      const allRecipes = recipesData.map((recipe) => {
+        const newRecipe = new Recipe(recipe);
+        newRecipe.retrieveIngredients(ingredientsData);
+        return newRecipe;
+      })
+      .sort((a, b) => {
+        return a.name > b.name ? 1 : -1;
+      });      
+      ingredient = new Ingredient(ingredientsData)
+      recipeRepository = new RecipeRepository(allRecipes);
       userRepo = new UserRepo(usersData);
-      newUserList = new UserList();
-      // renderTags();
-      // selectRandomUser();
+      userList = new UserList();
+      renderTags()
+      selectRandomUser()
     })
     .catch((err) => console.log(err));
 }
 
-function renderPage() {
-  getData()
-  renderTags()
-  selectRandomUser()
-}
-// function getData() {
-//   Promise.all([getUsersAPIData, getRecipesAPIData, getIngredientsAPIData])
-//     .then((data) => {
-//       const usersAPIData = data[0].usersData;
-//       const recipesAPIData = data[1].recipeData;
-//       const ingredientsAPIData = data[2].ingredientsData;
-//
-//       allRecipes = recipesAPIData
-//         .map((recipe) => {
-//           const newRecipe = new Recipe(recipe);
-//           newRecipe.retrieveIngredients(ingredientsAPIData);
-//           return newRecipe;
-//         })
-//         .sort((a, b) => {
-//           return a.name > b.name ? 1 : -1;
-//         });
-//       recipeRepository = new RecipeRepository(allRecipes);
-//       userRepo = new UserRepo(usersAPIData);
-//       newUserList = new UserList();
-//       renderTags();
-//       selectRandomUser();
-//     })
-    .catch((err) => console.log(err));
-}
-
-// function loadPage() {
-//   getData();
-// }
 //----Post Event Handler
 function updateInfo() {
   postData()
   .then(() => {
       getUsersData()
       .then(fetchedUsers => {
-        console.log('We Have Users!' fetchedUsers)
+        console.log('We Have Users!', fetchedUsers)
         renderPage()
       })
   })
@@ -176,7 +132,7 @@ function searchAllRecipesByTag(event) {
 
 function searchUserRecipesByTag(event) {
   const tagValue = event.target.value;
-  const filteredRecipes = newUserList.filterByTag(tagValue);
+  const filteredRecipes = userList.filterByTag(tagValue);
   viewAllRecipes(filteredRecipes);
 }
 
@@ -232,7 +188,7 @@ function searchForRecipes(event) {
     filteredElements = recipeRepository.filterByName(inputValue);
   } else {
     const inputValue = userSearchForm.elements.search.value;
-    filteredElements = newUserList.filterByName(inputValue);
+    filteredElements = userList.filterByName(inputValue);
   }
   viewAllRecipes(filteredElements);
 
@@ -269,7 +225,7 @@ function renderRecipe(recipe) {
   recipeImage.addEventListener("click", seeRecipe);
   recipeImage.addEventListener("keypress", seeRecipe);
   const saveRecipeButton = newSection.querySelector(".save-recipe-button");
-  const alreadySaved = newUserList.recipesToCook.map(thisRecipe => {
+  const alreadySaved = userList.recipesToCook.map(thisRecipe => {
     return thisRecipe.name
   })
   if(alreadySaved.includes(recipe.name)){
@@ -309,11 +265,11 @@ function addToSavedRecipe(event) {
   const newSavedRecipe = recipeRepository.newRecipes.find((recipe) => {
     return parseInt(event.target.id) === recipe.id;
   });
-  const existingData = newUserList.recipesToCook.find((recipe) => {
+  const existingData = userList.recipesToCook.find((recipe) => {
     return newSavedRecipe.id === recipe.id;
   });
   if (!existingData) {
-    newUserList.recipesToCook.push(newSavedRecipe);
+    userList.recipesToCook.push(newSavedRecipe);
   }
   saveRecipe();
 }
@@ -321,7 +277,7 @@ function addToSavedRecipe(event) {
 function saveRecipe() {
   viewMyRecipes();
   savedRecipeContainer.innerHTML = "";
-  newUserList.recipesToCook.forEach((recipe) => {
+  userList.recipesToCook.forEach((recipe) => {
     const newSection = document.createElement("section");
     newSection.className = "recipe-card-container";
     newSection.innerHTML = `
@@ -341,13 +297,13 @@ function saveRecipe() {
 }
 
 function deleteRecipe(event) {
-  const removeRecipe = newUserList.recipesToCook.find((recipe) => {
+  const removeRecipe = userList.recipesToCook.find((recipe) => {
     return parseInt(event.target.id) === recipe.id;
   });
-  const indexNumber = newUserList.recipesToCook.indexOf(removeRecipe);
-  newUserList.recipesToCook.splice(indexNumber, 1);
+  const indexNumber = userList.recipesToCook.indexOf(removeRecipe);
+  userList.recipesToCook.splice(indexNumber, 1);
   saveRecipe();
-  if (!newUserList.recipesToCook.length) {
+  if (!userList.recipesToCook.length) {
     savedRecipeContainer.innerHTML = "<p>Nothing to show!😕</p>";
     return;
   }
@@ -372,7 +328,7 @@ function viewMyRecipes() {
   removeHidden(savedRecipePage);
   changeToUserInputs();
   headerTitle.innerText = "Recipes to Cook";
-  if (!newUserList.recipesToCook.length) {
+  if (!userList.recipesToCook.length) {
     savedRecipeContainer.innerHTML = "<p>Nothing to show!😕</p>";
     return;
   }
