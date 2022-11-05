@@ -36,7 +36,7 @@ class UserPantry {
     return missingIngredients;
   }
 
-  checkRecipeIngridients(recipe) {
+  checkRecipeIngredients(recipe) {
     const missingInfo = this.getMissingIngredientsInfo(recipe);
 
     return !missingInfo.length
