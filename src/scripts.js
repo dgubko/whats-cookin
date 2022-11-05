@@ -1,5 +1,9 @@
 import "./styles.css";
-import {fetchedIngredients, fetchedRecipes, fetchedUsers, postData
+import {
+  fetchedIngredients,
+  fetchedRecipes,
+  fetchedUsers,
+  postData,
 } from "./apiCalls";
 import "./images/turing-logo.png";
 import Recipe from "./classes/Recipe";
@@ -7,9 +11,17 @@ import RecipeRepository from "./classes/RecipeRepository";
 import UserRepo from "./classes/UserRepo";
 import User from "./classes/User";
 import UserList from "./classes/UserList";
-import Ingredient from "./classes/Ingredient";
+import UserPantry from "./classes/UserPantry";
 
-let currentUser, usersData, userRepo, recipesData, recipeRepository, recipe, userList, ingredientsData, ingredient
+let usersData,
+  recipeRepository,
+  currentUser,
+  userRepo,
+  userList,
+  userPantry,
+  ingredientsData,
+  recipesData;
+
 //query selectors go here
 //pages
 const homePage = document.querySelector(".home-page");
@@ -22,12 +34,15 @@ const currentRecipeContainer = document.querySelector("#current-recipe-id");
 const savedRecipeContainer = document.querySelector(
   "#saved-recipe-card-container"
 );
+const myPantry = document.querySelector(".my-pantry-list");
+const pantryContainer = document.querySelector("#my-pantry-container");
 const headerTitle = document.querySelector(".header-title");
 //button
 const homeButton = document.querySelector(".return-home");
 const recipesButton = document.querySelector(".all-recipes-button");
 const allSearchButtons = document.querySelectorAll(".search-button");
 const myRecipesButton = document.querySelector(".my-recipes-button");
+const myPantryButton = document.querySelector("#my-pantry-button");
 //filters
 const allTagSelect = document.querySelector("#all-tag-select");
 const userTagSelect = document.querySelector("#user-tag-select");
@@ -42,6 +57,7 @@ window.addEventListener("load", getAllData);
 recipesButton.addEventListener("click", renderAllRecipesPage);
 homeButton.addEventListener("click", returnHome);
 myRecipesButton.addEventListener("click", viewMyRecipes);
+myPantryButton.addEventListener("click", showUserPantry);
 
 allImages.forEach((image) => {
   image.addEventListener("click", seeRecipe);
@@ -59,8 +75,6 @@ allMiniImages.forEach((image) => {
 allSearchButtons.forEach((button) => {
   button.addEventListener("click", searchForRecipes);
 });
-
-
 
 allTagSelect.addEventListener("change", searchAllRecipesByTag);
 userTagSelect.addEventListener("change", searchUserRecipesByTag);
@@ -85,35 +99,35 @@ function getAllData() {
     .then((data) => {
       usersData = data[0];
       recipesData = data[1];
-      ingredientsData = data[2]; 
-      const allRecipes = recipesData.map((recipe) => {
-        const newRecipe = new Recipe(recipe);
-        newRecipe.retrieveIngredients(ingredientsData);
-        return newRecipe;
-      })
-      .sort((a, b) => {
-        return a.name > b.name ? 1 : -1;
-      });      
-      ingredient = new Ingredient(ingredientsData)
+      ingredientsData = data[2];
+      const allRecipes = recipesData
+        .map((recipe) => {
+          const newRecipe = new Recipe(recipe);
+          newRecipe.retrieveIngredients(ingredientsData);
+          return newRecipe;
+        })
+        .sort((a, b) => {
+          return a.name > b.name ? 1 : -1;
+        });
+
       recipeRepository = new RecipeRepository(allRecipes);
       userRepo = new UserRepo(usersData);
-      userList = new UserList();
-      renderTags()
-      selectRandomUser()
+
+      renderTags();
+      getUser();
+      userPantry.retrieveIngredients(ingredientsData);
     })
     .catch((err) => console.log(err));
 }
 
 //----Post Event Handler
 function updateInfo() {
-  postData()
-  .then(() => {
-      getUsersData()
-      .then(fetchedUsers => {
-        console.log('We Have Users!', fetchedUsers)
-        renderPage()
-      })
-  })
+  postData().then(() => {
+    getUsersData().then((fetchedUsers) => {
+      console.log("We Have Users!", fetchedUsers);
+      renderPage();
+    });
+  });
 }
 
 function renderTags() {
@@ -136,10 +150,12 @@ function searchUserRecipesByTag(event) {
   viewAllRecipes(filteredRecipes);
 }
 
-function selectRandomUser() {
+function getUser() {
   let randomIndex = Math.floor(Math.random() * userRepo.userCatalog.length);
   let randomUser = userRepo.userCatalog[randomIndex];
   currentUser = new User(randomUser);
+  userPantry = new UserPantry(randomUser.pantry);
+  userList = new UserList();
 }
 
 function renderAllRecipesPage() {
@@ -149,13 +165,14 @@ function renderAllRecipesPage() {
 }
 
 function viewAllRecipes(recipes) {
+  addHidden(recipesButton);
+  addHidden(myPantry);
   addHidden(homePage);
   addHidden(currentRecipePage);
   removeHidden(allRecipesPage);
   addHidden(savedRecipePage);
   removeHidden(homeButton);
   removeHidden(myRecipesButton);
-
 
   allRecipesContainer.innerHTML = "";
   if (!recipes.length) {
@@ -174,9 +191,9 @@ function viewAllRecipes(recipes) {
     recipeImage.addEventListener("click", seeRecipe);
     recipeImage.addEventListener("keypress", seeRecipe);
   });
-  allSearchForm.elements.search.value = ""
-  userSearchForm.elements.search.value = ""
-  renderTags()
+  allSearchForm.elements.search.value = "";
+  userSearchForm.elements.search.value = "";
+  renderTags();
 }
 
 function searchForRecipes(event) {
@@ -191,7 +208,6 @@ function searchForRecipes(event) {
     filteredElements = userList.filterByName(inputValue);
   }
   viewAllRecipes(filteredElements);
-
 }
 
 function seeRecipe(event) {
@@ -225,11 +241,11 @@ function renderRecipe(recipe) {
   recipeImage.addEventListener("click", seeRecipe);
   recipeImage.addEventListener("keypress", seeRecipe);
   const saveRecipeButton = newSection.querySelector(".save-recipe-button");
-  const alreadySaved = userList.recipesToCook.map(thisRecipe => {
-    return thisRecipe.name
-  })
-  if(alreadySaved.includes(recipe.name)){
-    addHidden(saveRecipeButton)
+  const alreadySaved = userList.recipesToCook.map((thisRecipe) => {
+    return thisRecipe.name;
+  });
+  if (alreadySaved.includes(recipe.name)) {
+    addHidden(saveRecipeButton);
   }
   saveRecipeButton.addEventListener("click", addToSavedRecipe);
 }
@@ -310,10 +326,13 @@ function deleteRecipe(event) {
 }
 
 function returnHome() {
+  removeHidden(myPantryButton);
   addHidden(allRecipesPage);
   addHidden(currentRecipePage);
   addHidden(savedRecipePage);
+  addHidden(myPantry);
   removeHidden(homePage);
+  removeHidden(recipesButton);
   addHidden(homeButton);
   removeHidden(myRecipesButton);
   changeToAllInputs();
@@ -321,12 +340,17 @@ function returnHome() {
 }
 
 function viewMyRecipes() {
+  removeHidden(recipesButton);
+  removeHidden(myPantryButton);
+  addHidden(myPantry);
   addHidden(allRecipesPage);
   addHidden(currentRecipePage);
   addHidden(homePage);
   addHidden(myRecipesButton);
   removeHidden(savedRecipePage);
   changeToUserInputs();
+
+  userSearchForm.style.visibility = "visible";
   headerTitle.innerText = "Recipes to Cook";
   if (!userList.recipesToCook.length) {
     savedRecipeContainer.innerHTML = "<p>Nothing to show!😕</p>";
@@ -334,11 +358,36 @@ function viewMyRecipes() {
   }
 }
 
+function showUserPantry() {
+  addHidden(userTagSelect);
+  addHidden(allTagSelect);
+  removeHidden(myRecipesButton);
+  removeHidden(homeButton);
+  addHidden(allRecipesPage);
+  addHidden(myPantryButton);
+  addHidden(currentRecipePage);
+  addHidden(homePage);
+  addHidden(savedRecipePage);
+  removeHidden(myPantry);
+  headerTitle.innerText = "My pantry";
+  renderPantryItems();
+  userSearchForm.style.visibility = "hidden";
+  allSearchForm.style.visibility = "hidden";
+}
+
+function renderPantryItems() {
+  pantryContainer.innerHTML = "";
+  userPantry.ingredients.forEach((item) => {
+    pantryContainer.innerHTML += `<p>${item.quantity.amount} ${item.name}</p>`;
+  });
+}
+
 function changeToAllInputs() {
   addHidden(userTagSelect);
   removeHidden(allTagSelect);
   removeHidden(allSearchForm);
   addHidden(userSearchForm);
+  allSearchForm.style.visibility = "visible";
 }
 
 function changeToUserInputs() {
@@ -346,6 +395,7 @@ function changeToUserInputs() {
   removeHidden(userTagSelect);
   addHidden(allSearchForm);
   removeHidden(userSearchForm);
+  userSearchForm.style.visibility = "visible";
 }
 
 function addHidden(element) {

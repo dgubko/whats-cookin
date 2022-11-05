@@ -9,6 +9,9 @@
       <section class="mini-menu-bar-container">
         <button class="return-home hidden" id="menu-button">Home</button>
         <button class="all-recipes-button" id="menu-button">All Recipes</button>
+        <button class="all-recipes-button" id="my-pantry-button">
+          My pantry
+        </button>
         <select name="all-tags" class="tag-select-class" id="all-tag-select">
           <option value="all" disabled selected>Search by tag</option>
         </select>
@@ -24,16 +27,20 @@
       <h1 class="header-title">Whats Cookin', Good Lookin'?</h1>
       <form class="all-search-bar">
         <input type="text" name="search" placeholder="Search Recipe Name" />
-        <button id="all-search-btn" class="search-button">Search All Recipes</button>
+        <button id="all-search-btn" class="search-button">
+          Search All Recipes
+        </button>
       </form>
       <form class="user-search-bar hidden">
         <input type="text" name="search" placeholder="Search Recipe Name" />
-        <button name="user-search-btn" class="search-button">Search My Recipes</button>
+        <button name="user-search-btn" class="search-button">
+          Search My Recipes
+        </button>
       </form>
     </header>
     <section class="home-page">
       <h2 class="featured-recipes">Featured</h2>
-      <div class="featured-container">     
+      <div class="featured-container">
         <section class="recipe-card-container">
           <img tabindex="0"
             class="image"
@@ -137,6 +144,9 @@
     </section>
     <section class="saved-recipes-page hidden">
       <div id="saved-recipe-card-container"></div>
+    </section>
+    <section class="my-pantry-list hidden">
+      <div id="my-pantry-container"></div>
     </section>
   </body>
   <script src="bundle.js"></script>
