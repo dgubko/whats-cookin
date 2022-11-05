@@ -28,6 +28,7 @@ const homePage = document.querySelector(".home-page");
 const allRecipesPage = document.querySelector(".all-recipes-page");
 const currentRecipePage = document.querySelector(".current-recipe");
 const savedRecipePage = document.querySelector(".saved-recipes-page");
+const cookMsg = document.querySelector("#cook-msg");
 //containers
 const allRecipesContainer = document.querySelector("#all-recipes-container");
 const currentRecipeContainer = document.querySelector("#current-recipe-id");
@@ -332,8 +333,11 @@ function deleteRecipe(event) {
 
 function cookRecipe(recipe) {
   console.log(recipe);
-  userPantry.checkRecipeIngredients(recipe);
-  savedRecipePage.innerHTML += `<p class="cook-msg"> ${userPantry.checkRecipeIngredients(recipe)} </p>`
+  cookMsg.innerHTML = "";
+  // userPantry.checkRecipeIngredients(recipe);
+  cookMsg.innerHTML += `<p class="cook-msg"> ${userPantry.checkRecipeIngredients(recipe)} </p>`;
+  // setTimeout(1000);
+  // saveRecipe();
 }
 
 function returnHome() {

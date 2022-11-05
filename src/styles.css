@@ -114,6 +114,21 @@ header {
   flex-direction: column;
 }
 
+.form-container {
+  height: 20vh;
+  width: 20vw;
+  border: solid 5px black;
+}
+
+.add-ingr {
+  height: 20vh;
+}
+
+.my-pantry-list {
+  display: flex;
+  flex-direction: row;
+}
+
 .featured-recipes {
   font-family: "Trebuchet MS", "Lucida Sans Unicode", "Lucida Grande",
     "Lucida Sans", Arial, sans-serif;
