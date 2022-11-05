@@ -299,6 +299,7 @@ function saveRecipe() {
     newSection.innerHTML = `
         <img tabindex="0" class="image" id="${recipe.id}" src="${recipe.image}">
         <button class="delete-recipe" id="${recipe.id}">Delete Recipe</button>
+        <button class="cook-recipe-button" id="${recipe.id}"> Cook Recipe </button>
         <p class="recipe-name"> ${recipe.name} </p>`;
 
     savedRecipeContainer.appendChild(newSection);
@@ -309,6 +310,10 @@ function saveRecipe() {
     deleteRecipeButtons.forEach((button) => {
       button.addEventListener("click", deleteRecipe);
     });
+    const cookRecipeButton = newSection.querySelector(".cook-recipe-button");
+    cookRecipeButton.addEventListener("click", function() {
+    cookRecipe(recipe);
+    })
   });
 }
 
@@ -323,6 +328,12 @@ function deleteRecipe(event) {
     savedRecipeContainer.innerHTML = "<p>Nothing to show!😕</p>";
     return;
   }
+}
+
+function cookRecipe(recipe) {
+  console.log(recipe);
+  userPantry.checkRecipeIngredients(recipe);
+  savedRecipePage.innerHTML += `<p class="cook-msg"> ${userPantry.checkRecipeIngredients(recipe)} </p>`
 }
 
 function returnHome() {
