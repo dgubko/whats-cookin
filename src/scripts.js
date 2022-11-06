@@ -85,22 +85,8 @@ allSearchButtons.forEach((button) => {
 
 allTagSelect.addEventListener("change", searchAllRecipesByTag);
 userTagSelect.addEventListener("change", searchUserRecipesByTag);
-// addInfoButton.addEventListener("click", updateInfo)
-// removeInfoButton.addEventListener("click", updateInfo)
-/*
-What->
-get data from apiCalls
-instantiate classes
-update the DOM
 
-How->
-create functions for each fetch call
- that invokes each fetch call
- then turns that returned value into an instance of that class
-seperate getData function logic into smaller functions
-*/
 //event handlers go here
-
 
 function getAllData() {
   Promise.all([fetchedUsers, fetchedRecipes, fetchedIngredients])
@@ -118,16 +104,14 @@ function getAllData() {
           return a.name > b.name ? 1 : -1;
         });
       recipeRepository = new RecipeRepository(allRecipes);
-      // userRepo = new UserRepo(usersData);
       console.log(userRepo);
       renderTags();
       if (currentUser === undefined) {
-        getUser(); 
-        // userPantry.retrieveIngredients(ingredientsData);   
+        getUser();   
       }else {
         console.log("currentUser: ", currentUser)
       }
-      console.log(userPantry);
+      console.log("In the whatever", userPantry);
       userPantry.retrieveIngredients(ingredientsData);
     })
     .catch((err) => console.log(err));
@@ -145,22 +129,16 @@ function updateInfo(user) {
   .then((data) => {
     console.log(data);
     userRepo = new UserRepo(data[0]);
-    renderPantryItems()
+    updateUser()
   })
 }
 
-  // .then((user) => {
-  //   // getAllData(user)
-  //     console.log("We Have Users!", user)
-  //     // renderPantryItems()
-  // })
-
-  // console.log(getAllData());
-  // console.log(fetchedUsers);
-  // getAllData();
-  // showUserPantry();
-  // console.log(userRepo)
-  // renderPantryItems();
+function updateUser() {
+  console.log(userRepo.userCatalog);
+  currentUser.pantry = userRepo.userCatalog
+  // renderPantryItems(userPantry)
+  console.log(userPantry);
+}
 
 function renderTags() {
   const tags = recipeRepository.getAllTags();
@@ -365,10 +343,7 @@ function deleteRecipe(event) {
 function cookRecipe(recipe) {
   console.log(recipe);
   cookMsg.innerHTML = "";
-  // userPantry.checkRecipeIngredients(recipe);
   cookMsg.innerHTML += `<p class="cook-msg"> ${userPantry.checkRecipeIngredients(recipe)} </p>`;
-  // setTimeout(1000);
-  // saveRecipe();
 };
 
 function addToPantry(event) {
@@ -429,15 +404,16 @@ function showUserPantry() {
   addHidden(savedRecipePage);
   removeHidden(myPantry);
   headerTitle.innerText = "My pantry";
-  renderPantryItems();
+  renderPantryItems(userPantry);
   userSearchForm.style.visibility = "hidden";
   allSearchForm.style.visibility = "hidden";
 }
 
-function renderPantryItems() {
+function renderPantryItems(pantry) {
+  console.log("what is this data", pantry);
   pantryContainer.innerHTML = "";
-  userPantry.ingredients.forEach((item) => {
-    pantryContainer.innerHTML += `<p>${item.quantity.amount} ${item.name}</p>`;
+  pantry.ingredients.forEach((item) => {
+    pantryContainer.innerHTML += `<p>${item.quantity} ${item.name}</p>`;
   });
 }
 
