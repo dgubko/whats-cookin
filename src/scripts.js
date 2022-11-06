@@ -4,6 +4,8 @@ import {
   fetchedRecipes,
   fetchedUsers,
   postData,
+  usersUrl,
+  getApiData,
 } from "./apiCalls";
 import "./images/turing-logo.png";
 import Recipe from "./classes/Recipe";
@@ -57,7 +59,7 @@ const allImages = document.querySelectorAll(".image");
 const allMiniImages = document.querySelectorAll(".mini-image");
 
 //event listeners go here
-window.addEventListener("load", loadPage);
+window.addEventListener("load", getAllData);
 recipesButton.addEventListener("click", renderAllRecipesPage);
 homeButton.addEventListener("click", returnHome);
 myRecipesButton.addEventListener("click", viewMyRecipes);
@@ -99,11 +101,6 @@ seperate getData function logic into smaller functions
 */
 //event handlers go here
 
-function loadPage() {
-  getAllData();
-  // getUser();
-};
-
 function getAllData() {
   Promise.all([fetchedUsers, fetchedRecipes, fetchedIngredients])
     .then((data) => {
@@ -119,10 +116,9 @@ function getAllData() {
         .sort((a, b) => {
           return a.name > b.name ? 1 : -1;
         });
-
       recipeRepository = new RecipeRepository(allRecipes);
       userRepo = new UserRepo(usersData);
-
+      console.log(userRepo);
       renderTags();
       if (currentUser === undefined) {
         getUser();
@@ -135,21 +131,23 @@ function getAllData() {
 }
 
 //----Post Event Handler
-function updateInfo(ingredient) {
-  postData(ingredient);
-  console.log(getAllData());
-  console.log(fetchedUsers);
-  getAllData();
-  showUserPantry();
-  console.log(userRepo)
-  // renderPantryItems();
-  // .then(() => {
-    // getAllData().then((fetchedUsers) => {
-    //   console.log("We Have Users!", fetchedUsers);
-    //   renderPage();
-    // });
-  // });
+function updateInfo(user) {
+  postData(user)
+  // .then((user) => {
+  //   // getAllData(user)
+  //     console.log("We Have Users!", user)
+  //     // renderPantryItems()
+  // })
+  .then(getAllData)
+  .then(renderPantryItems)
 }
+
+  // console.log(getAllData());
+  // console.log(fetchedUsers);
+  // getAllData();
+  // showUserPantry();
+  // console.log(userRepo)
+  // renderPantryItems();
 
 function renderTags() {
   const tags = recipeRepository.getAllTags();
@@ -362,18 +360,15 @@ function cookRecipe(recipe) {
 
 function addToPantry(event) {
   event.preventDefault();
-  console.log(userPantry.ingredients);
   const ingredientName = ingredientsData.find(ing => {
     return ing.name === searchIngrName.value
   });
   const changeQuantity = userPantry.ingredients.find(amt => {
     return amt.id === ingredientName.id
   });
-  console.log(changeQuantity.quantity.amount)
   const ingredientQuantity = searchIngrQuantity.value;
   const newIngredient = {"userID": currentUser.id, "ingredientID": ingredientName.id, ["ingredientModification"]: + ingredientQuantity};
   updateInfo(newIngredient);
-  console.log(ingredientName);
 };
 
 function returnHome() {
