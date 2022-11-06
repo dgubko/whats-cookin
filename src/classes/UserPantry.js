@@ -36,12 +36,12 @@ class UserPantry {
     return missingIngredients;
   }
 
-  checkRecipeIngridients(recipe) {
+  checkRecipeIngredients(recipe) {
     const missingInfo = this.getMissingIngredientsInfo(recipe);
 
     return !missingInfo.length
       ? "You have enough ingredients to cook this recipe!"
-      : `You need ${missingInfo.join(" and ")}`;
+      : `You need ${missingInfo.join(" and ")}. Go to My Pantry to add ingredients!`;
   }
 }
 

@@ -1,4 +1,5 @@
 // Your fetch requests will live here!
+
 const usersUrl = 'http://localhost:3001/api/v1/users'
 const ingredientsUrl = 'http://localhost:3001/api/v1/ingredients'
 const recipesUrl = 'http://localhost:3001/api/v1/recipes'
@@ -28,14 +29,14 @@ const fetchedIngredients = getApiData(ingredientsUrl)
 
 
 
-function postData() {
+function postData(user) {
   let postedData = fetch(usersUrl, {
     method: 'POST',
-    body: JSON.stringify(samplePostProperties),
+    body: JSON.stringify(user),
     headers: { 'content-type': 'application/json'}
   })
     .then(res => res.json())
-    // .then(res => console.log(res))
+    // .then(data => console.log(data))
     .catch(err => console.log('To err is human', err))
   return postedData
 }

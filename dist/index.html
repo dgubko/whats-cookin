@@ -143,10 +143,20 @@
       <div id="current-recipe-id"></div>
     </section>
     <section class="saved-recipes-page hidden">
+      <div id="cook-msg"></div>
       <div id="saved-recipe-card-container"></div>
     </section>
     <section class="my-pantry-list hidden">
       <div id="my-pantry-container"></div>
+      <div class="form-container">
+        <form method="get" class="add-ingr" id="add-ingr">
+          <input type="text" class="ingredient-name" name="search" placeholder="Ingredient Name" required/>
+          <input type="text" class="ingredient-quantity" name="search"
+          placeholder="Ingredient Quantity" required/>
+          <button class="add-ingr-button"> Add Ingredient
+          </button>
+        </form>
+      </div>
     </section>
   </body>
   <script src="bundle.js"></script>

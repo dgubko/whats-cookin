@@ -28,6 +28,7 @@ const homePage = document.querySelector(".home-page");
 const allRecipesPage = document.querySelector(".all-recipes-page");
 const currentRecipePage = document.querySelector(".current-recipe");
 const savedRecipePage = document.querySelector(".saved-recipes-page");
+const cookMsg = document.querySelector("#cook-msg");
 //containers
 const allRecipesContainer = document.querySelector("#all-recipes-container");
 const currentRecipeContainer = document.querySelector("#current-recipe-id");
@@ -43,21 +44,25 @@ const recipesButton = document.querySelector(".all-recipes-button");
 const allSearchButtons = document.querySelectorAll(".search-button");
 const myRecipesButton = document.querySelector(".my-recipes-button");
 const myPantryButton = document.querySelector("#my-pantry-button");
+const addIngrBtn = document.querySelector(".add-ingr-button");
 //filters
 const allTagSelect = document.querySelector("#all-tag-select");
 const userTagSelect = document.querySelector("#user-tag-select");
 const userSearchForm = document.querySelector(".user-search-bar");
 const allSearchForm = document.querySelector(".all-search-bar");
+const searchIngrName = document.querySelector(".ingredient-name");
+const searchIngrQuantity = document.querySelector(".ingredient-quantity");
 
 const allImages = document.querySelectorAll(".image");
 const allMiniImages = document.querySelectorAll(".mini-image");
 
 //event listeners go here
-window.addEventListener("load", getAllData);
+window.addEventListener("load", loadPage);
 recipesButton.addEventListener("click", renderAllRecipesPage);
 homeButton.addEventListener("click", returnHome);
 myRecipesButton.addEventListener("click", viewMyRecipes);
 myPantryButton.addEventListener("click", showUserPantry);
+addIngrBtn.addEventListener("click", addToPantry);
 
 allImages.forEach((image) => {
   image.addEventListener("click", seeRecipe);
@@ -94,6 +99,11 @@ seperate getData function logic into smaller functions
 */
 //event handlers go here
 
+function loadPage() {
+  getAllData();
+  // getUser();
+};
+
 function getAllData() {
   Promise.all([fetchedUsers, fetchedRecipes, fetchedIngredients])
     .then((data) => {
@@ -114,20 +124,31 @@ function getAllData() {
       userRepo = new UserRepo(usersData);
 
       renderTags();
-      getUser();
-      userPantry.retrieveIngredients(ingredientsData);
+      if (currentUser === undefined) {
+        getUser();
+        userPantry.retrieveIngredients(ingredientsData);
+      }else {
+        console.log("currentUser: ", currentUser)
+      }
     })
     .catch((err) => console.log(err));
 }
 
 //----Post Event Handler
-function updateInfo() {
-  postData().then(() => {
-    getUsersData().then((fetchedUsers) => {
-      console.log("We Have Users!", fetchedUsers);
-      renderPage();
-    });
-  });
+function updateInfo(ingredient) {
+  postData(ingredient);
+  console.log(getAllData());
+  console.log(fetchedUsers);
+  getAllData();
+  showUserPantry();
+  console.log(userRepo)
+  // renderPantryItems();
+  // .then(() => {
+    // getAllData().then((fetchedUsers) => {
+    //   console.log("We Have Users!", fetchedUsers);
+    //   renderPage();
+    // });
+  // });
 }
 
 function renderTags() {
@@ -299,6 +320,7 @@ function saveRecipe() {
     newSection.innerHTML = `
         <img tabindex="0" class="image" id="${recipe.id}" src="${recipe.image}">
         <button class="delete-recipe" id="${recipe.id}">Delete Recipe</button>
+        <button class="cook-recipe-button" id="${recipe.id}"> Cook Recipe </button>
         <p class="recipe-name"> ${recipe.name} </p>`;
 
     savedRecipeContainer.appendChild(newSection);
@@ -309,6 +331,10 @@ function saveRecipe() {
     deleteRecipeButtons.forEach((button) => {
       button.addEventListener("click", deleteRecipe);
     });
+    const cookRecipeButton = newSection.querySelector(".cook-recipe-button");
+    cookRecipeButton.addEventListener("click", function() {
+    cookRecipe(recipe);
+    })
   });
 }
 
@@ -322,8 +348,33 @@ function deleteRecipe(event) {
   if (!userList.recipesToCook.length) {
     savedRecipeContainer.innerHTML = "<p>Nothing to show!😕</p>";
     return;
-  }
-}
+  };
+};
+
+function cookRecipe(recipe) {
+  console.log(recipe);
+  cookMsg.innerHTML = "";
+  // userPantry.checkRecipeIngredients(recipe);
+  cookMsg.innerHTML += `<p class="cook-msg"> ${userPantry.checkRecipeIngredients(recipe)} </p>`;
+  // setTimeout(1000);
+  // saveRecipe();
+};
+
+function addToPantry(event) {
+  event.preventDefault();
+  console.log(userPantry.ingredients);
+  const ingredientName = ingredientsData.find(ing => {
+    return ing.name === searchIngrName.value
+  });
+  const changeQuantity = userPantry.ingredients.find(amt => {
+    return amt.id === ingredientName.id
+  });
+  console.log(changeQuantity.quantity.amount)
+  const ingredientQuantity = searchIngrQuantity.value;
+  const newIngredient = {"userID": currentUser.id, "ingredientID": ingredientName.id, ["ingredientModification"]: + ingredientQuantity};
+  updateInfo(newIngredient);
+  console.log(ingredientName);
+};
 
 function returnHome() {
   removeHidden(myPantryButton);
@@ -405,3 +456,5 @@ function addHidden(element) {
 function removeHidden(element) {
   element.classList.remove("hidden");
 }
+
+export {getAllData};
