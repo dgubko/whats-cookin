@@ -104,7 +104,6 @@ function getAllData() {
           return a.name > b.name ? 1 : -1;
         });
       recipeRepository = new RecipeRepository(allRecipes);
-      console.log(userRepo);
       renderTags();
       if (currentUser === undefined) {
         getUser();   
@@ -134,10 +133,9 @@ function updateInfo(user) {
 }
 
 function updateUser() {
-  console.log(userRepo.userCatalog);
-  currentUser.pantry = userRepo.userCatalog
-  // renderPantryItems(userPantry)
-  console.log(userPantry);
+  userPantry.ingredients = userRepo.getUserInfo(currentUser.id).pantry
+  userPantry.retrieveIngredients(ingredientsData)
+  renderPantryItems(userPantry)
 }
 
 function renderTags() {
@@ -164,6 +162,7 @@ function getUser() {
   let randomIndex = Math.floor(Math.random() * userRepo.userCatalog.length);
   let randomUser = userRepo.userCatalog[randomIndex];
   currentUser = new User(randomUser);
+  console.log("wtf", randomUser.pantry);
   userPantry = new UserPantry(randomUser.pantry);
   userList = new UserList();
 }
@@ -410,7 +409,6 @@ function showUserPantry() {
 }
 
 function renderPantryItems(pantry) {
-  console.log("what is this data", pantry);
   pantryContainer.innerHTML = "";
   pantry.ingredients.forEach((item) => {
     pantryContainer.innerHTML += `<p>${item.quantity} ${item.name}</p>`;
