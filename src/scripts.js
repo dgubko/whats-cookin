@@ -101,10 +101,11 @@ seperate getData function logic into smaller functions
 */
 //event handlers go here
 
+
 function getAllData() {
   Promise.all([fetchedUsers, fetchedRecipes, fetchedIngredients])
     .then((data) => {
-      usersData = data[0];
+      userRepo = new UserRepo(data[0]);
       recipesData = data[1];
       ingredientsData = data[2];
       const allRecipes = recipesData
@@ -117,30 +118,42 @@ function getAllData() {
           return a.name > b.name ? 1 : -1;
         });
       recipeRepository = new RecipeRepository(allRecipes);
-      userRepo = new UserRepo(usersData);
+      // userRepo = new UserRepo(usersData);
       console.log(userRepo);
       renderTags();
       if (currentUser === undefined) {
-        getUser();
-        userPantry.retrieveIngredients(ingredientsData);
+        getUser(); 
+        // userPantry.retrieveIngredients(ingredientsData);   
       }else {
         console.log("currentUser: ", currentUser)
       }
+      console.log(userPantry);
+      userPantry.retrieveIngredients(ingredientsData);
     })
     .catch((err) => console.log(err));
 }
 
 //----Post Event Handler
 function updateInfo(user) {
-  postData(user)
+  console.log(user);
+  const newPost = postData(user)
+  Promise.all([newPost])
+  .then((data) => {
+    console.log(data);
+   return Promise.all([getApiData(usersUrl)]) 
+  })
+  .then((data) => {
+    console.log(data);
+    userRepo = new UserRepo(data[0]);
+    renderPantryItems()
+  })
+}
+
   // .then((user) => {
   //   // getAllData(user)
   //     console.log("We Have Users!", user)
   //     // renderPantryItems()
   // })
-  .then(getAllData)
-  .then(renderPantryItems)
-}
 
   // console.log(getAllData());
   // console.log(fetchedUsers);
@@ -367,7 +380,7 @@ function addToPantry(event) {
     return amt.id === ingredientName.id
   });
   const ingredientQuantity = searchIngrQuantity.value;
-  const newIngredient = {"userID": currentUser.id, "ingredientID": ingredientName.id, ["ingredientModification"]: + ingredientQuantity};
+  const newIngredient = {"userID": currentUser.id, "ingredientID": ingredientName.id, "ingredientModification": + ingredientQuantity};
   updateInfo(newIngredient);
 };
 
