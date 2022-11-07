@@ -107,10 +107,7 @@ function getAllData() {
       renderTags();
       if (currentUser === undefined) {
         getUser();   
-      }else {
-        console.log("currentUser: ", currentUser)
       }
-      console.log("In the whatever", userPantry);
       userPantry.retrieveIngredients(ingredientsData);
     })
     .catch((err) => console.log(err));
@@ -118,7 +115,6 @@ function getAllData() {
 
 //----Post Event Handler
 function updateInfo(user) {
-  console.log(user);
   const newPost = postData(user)
   Promise.all([newPost])
   .then((data) => {
@@ -162,7 +158,6 @@ function getUser() {
   let randomIndex = Math.floor(Math.random() * userRepo.userCatalog.length);
   let randomUser = userRepo.userCatalog[randomIndex];
   currentUser = new User(randomUser);
-  console.log("wtf", randomUser.pantry);
   userPantry = new UserPantry(randomUser.pantry);
   userList = new UserList();
 }
@@ -340,18 +335,28 @@ function deleteRecipe(event) {
 };
 
 function cookRecipe(recipe) {
-  console.log(recipe);
   cookMsg.innerHTML = "";
   cookMsg.innerHTML += `<p class="cook-msg"> ${userPantry.checkRecipeIngredients(recipe)} </p>`;
+  removeFromPantry(recipe)
 };
+
+function removeFromPantry(currentRecipe) {
+  const ingredientQuantity = currentRecipe.ingredients.map(recipe => {
+    return recipe.quantity.amount
+  });
+  const ingredientName = currentRecipe.ingredients.map(ing => {
+    return ing.id
+  })
+
+  console.log("hello there", ingredientName, ingredientQuantity);
+  const newIngredient = {"userID": currentUser.id, "ingredientID": ingredientName[0], "ingredientModification": - ingredientQuantity[0]};
+  updateInfo(newIngredient);
+}
 
 function addToPantry(event) {
   event.preventDefault();
   const ingredientName = ingredientsData.find(ing => {
     return ing.name === searchIngrName.value
-  });
-  const changeQuantity = userPantry.ingredients.find(amt => {
-    return amt.id === ingredientName.id
   });
   const ingredientQuantity = searchIngrQuantity.value;
   const newIngredient = {"userID": currentUser.id, "ingredientID": ingredientName.id, "ingredientModification": + ingredientQuantity};

@@ -40,7 +40,7 @@ class UserPantry {
     const missingInfo = this.getMissingIngredientsInfo(recipe);
 
     return !missingInfo.length
-      ? "You have enough ingredients to cook this recipe!"
+      ? "That recipe has been cooked, enjoy!"
       : `You need ${missingInfo.join(" and ")}. Go to My Pantry to add ingredients!`;
   }
 }
