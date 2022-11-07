@@ -88,6 +88,11 @@ userTagSelect.addEventListener("change", searchUserRecipesByTag);
 
 //event handlers go here
 
+const errorMessage = 'Sorry, something went wrong'
+function displayError(errorMessage) {
+
+}
+
 function getAllData() {
   Promise.all([fetchedUsers, fetchedRecipes, fetchedIngredients])
     .then((data) => {
@@ -107,7 +112,7 @@ function getAllData() {
       console.log(userRepo);
       renderTags();
       if (currentUser === undefined) {
-        getUser();   
+        getUser();
       }else {
         console.log("currentUser: ", currentUser)
       }
@@ -124,7 +129,7 @@ function updateInfo(user) {
   Promise.all([newPost])
   .then((data) => {
     console.log(data);
-   return Promise.all([getApiData(usersUrl)]) 
+   return Promise.all([getApiData(usersUrl)])
   })
   .then((data) => {
     console.log(data);
