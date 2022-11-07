@@ -27,8 +27,6 @@ const fetchedUsers = getApiData(usersUrl)
 const fetchedRecipes = getApiData(recipesUrl)
 const fetchedIngredients = getApiData(ingredientsUrl)
 
-
-
 function postData(user) {
   let postedData = fetch(usersUrl, {
     method: 'POST',
@@ -51,5 +49,5 @@ function postData(user) {
 //   return deletedData
 // }
 
-export {usersUrl, ingredientsUrl, recipesUrl, fetchedIngredients, fetchedRecipes, fetchedUsers, postData}
+export {usersUrl, ingredientsUrl, recipesUrl, fetchedIngredients, fetchedRecipes, fetchedUsers, postData, getApiData}
 // getUsersData, getIngredientsData, getRecipeData

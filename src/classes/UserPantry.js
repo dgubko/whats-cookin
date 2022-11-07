@@ -10,7 +10,7 @@ class UserPantry {
       const element = ingredientsData.find(
         (ingr) => ingr.id === item.ingredient
       );
-      return new Ingredient(element, { amount: item.amount });
+      return new Ingredient(element, item.amount);
     });
   }
 

@@ -4,6 +4,8 @@ import {
   fetchedRecipes,
   fetchedUsers,
   postData,
+  usersUrl,
+  getApiData,
 } from "./apiCalls";
 import "./images/turing-logo.png";
 import Recipe from "./classes/Recipe";
@@ -57,7 +59,7 @@ const allImages = document.querySelectorAll(".image");
 const allMiniImages = document.querySelectorAll(".mini-image");
 
 //event listeners go here
-window.addEventListener("load", loadPage);
+window.addEventListener("load", getAllData);
 recipesButton.addEventListener("click", renderAllRecipesPage);
 homeButton.addEventListener("click", returnHome);
 myRecipesButton.addEventListener("click", viewMyRecipes);
@@ -83,31 +85,13 @@ allSearchButtons.forEach((button) => {
 
 allTagSelect.addEventListener("change", searchAllRecipesByTag);
 userTagSelect.addEventListener("change", searchUserRecipesByTag);
-// addInfoButton.addEventListener("click", updateInfo)
-// removeInfoButton.addEventListener("click", updateInfo)
-/*
-What->
-get data from apiCalls
-instantiate classes
-update the DOM
 
-How->
-create functions for each fetch call
- that invokes each fetch call
- then turns that returned value into an instance of that class
-seperate getData function logic into smaller functions
-*/
 //event handlers go here
-
-function loadPage() {
-  getAllData();
-  // getUser();
-};
 
 function getAllData() {
   Promise.all([fetchedUsers, fetchedRecipes, fetchedIngredients])
     .then((data) => {
-      usersData = data[0];
+      userRepo = new UserRepo(data[0]);
       recipesData = data[1];
       ingredientsData = data[2];
       const allRecipes = recipesData
@@ -119,36 +103,41 @@ function getAllData() {
         .sort((a, b) => {
           return a.name > b.name ? 1 : -1;
         });
-
       recipeRepository = new RecipeRepository(allRecipes);
-      userRepo = new UserRepo(usersData);
-
+      console.log(userRepo);
       renderTags();
       if (currentUser === undefined) {
-        getUser();
-        userPantry.retrieveIngredients(ingredientsData);
+        getUser();   
       }else {
         console.log("currentUser: ", currentUser)
       }
+      console.log("In the whatever", userPantry);
+      userPantry.retrieveIngredients(ingredientsData);
     })
     .catch((err) => console.log(err));
 }
 
 //----Post Event Handler
-function updateInfo(ingredient) {
-  postData(ingredient);
-  console.log(getAllData());
-  console.log(fetchedUsers);
-  getAllData();
-  showUserPantry();
-  console.log(userRepo)
-  // renderPantryItems();
-  // .then(() => {
-    // getAllData().then((fetchedUsers) => {
-    //   console.log("We Have Users!", fetchedUsers);
-    //   renderPage();
-    // });
-  // });
+function updateInfo(user) {
+  console.log(user);
+  const newPost = postData(user)
+  Promise.all([newPost])
+  .then((data) => {
+    console.log(data);
+   return Promise.all([getApiData(usersUrl)]) 
+  })
+  .then((data) => {
+    console.log(data);
+    userRepo = new UserRepo(data[0]);
+    updateUser()
+  })
+}
+
+function updateUser() {
+  console.log(userRepo.userCatalog);
+  currentUser.pantry = userRepo.userCatalog
+  // renderPantryItems(userPantry)
+  console.log(userPantry);
 }
 
 function renderTags() {
@@ -354,26 +343,20 @@ function deleteRecipe(event) {
 function cookRecipe(recipe) {
   console.log(recipe);
   cookMsg.innerHTML = "";
-  // userPantry.checkRecipeIngredients(recipe);
   cookMsg.innerHTML += `<p class="cook-msg"> ${userPantry.checkRecipeIngredients(recipe)} </p>`;
-  // setTimeout(1000);
-  // saveRecipe();
 };
 
 function addToPantry(event) {
   event.preventDefault();
-  console.log(userPantry.ingredients);
   const ingredientName = ingredientsData.find(ing => {
     return ing.name === searchIngrName.value
   });
   const changeQuantity = userPantry.ingredients.find(amt => {
     return amt.id === ingredientName.id
   });
-  console.log(changeQuantity.quantity.amount)
   const ingredientQuantity = searchIngrQuantity.value;
-  const newIngredient = {"userID": currentUser.id, "ingredientID": ingredientName.id, ["ingredientModification"]: + ingredientQuantity};
+  const newIngredient = {"userID": currentUser.id, "ingredientID": ingredientName.id, "ingredientModification": + ingredientQuantity};
   updateInfo(newIngredient);
-  console.log(ingredientName);
 };
 
 function returnHome() {
@@ -421,15 +404,16 @@ function showUserPantry() {
   addHidden(savedRecipePage);
   removeHidden(myPantry);
   headerTitle.innerText = "My pantry";
-  renderPantryItems();
+  renderPantryItems(userPantry);
   userSearchForm.style.visibility = "hidden";
   allSearchForm.style.visibility = "hidden";
 }
 
-function renderPantryItems() {
+function renderPantryItems(pantry) {
+  console.log("what is this data", pantry);
   pantryContainer.innerHTML = "";
-  userPantry.ingredients.forEach((item) => {
-    pantryContainer.innerHTML += `<p>${item.quantity.amount} ${item.name}</p>`;
+  pantry.ingredients.forEach((item) => {
+    pantryContainer.innerHTML += `<p>${item.quantity} ${item.name}</p>`;
   });
 }
 
