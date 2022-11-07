@@ -104,14 +104,10 @@ function getAllData() {
           return a.name > b.name ? 1 : -1;
         });
       recipeRepository = new RecipeRepository(allRecipes);
-      console.log(userRepo);
       renderTags();
       if (currentUser === undefined) {
         getUser();   
-      }else {
-        console.log("currentUser: ", currentUser)
       }
-      console.log("In the whatever", userPantry);
       userPantry.retrieveIngredients(ingredientsData);
     })
     .catch((err) => console.log(err));
@@ -119,7 +115,6 @@ function getAllData() {
 
 //----Post Event Handler
 function updateInfo(user) {
-  console.log(user);
   const newPost = postData(user)
   Promise.all([newPost])
   .then((data) => {
@@ -134,10 +129,9 @@ function updateInfo(user) {
 }
 
 function updateUser() {
-  console.log(userRepo.userCatalog);
-  currentUser.pantry = userRepo.userCatalog
-  // renderPantryItems(userPantry)
-  console.log(userPantry);
+  userPantry.ingredients = userRepo.getUserInfo(currentUser.id).pantry
+  userPantry.retrieveIngredients(ingredientsData)
+  renderPantryItems(userPantry)
 }
 
 function renderTags() {
@@ -341,18 +335,28 @@ function deleteRecipe(event) {
 };
 
 function cookRecipe(recipe) {
-  console.log(recipe);
   cookMsg.innerHTML = "";
   cookMsg.innerHTML += `<p class="cook-msg"> ${userPantry.checkRecipeIngredients(recipe)} </p>`;
+  removeFromPantry(recipe)
 };
+
+function removeFromPantry(currentRecipe) {
+  const ingredientQuantity = currentRecipe.ingredients.map(recipe => {
+    const ingredientName = currentRecipe.ingredients.map(ingredient => {
+      const newIngredient = {"userID": currentUser.id, "ingredientID": ingredient.id, "ingredientModification": - recipe.quantity.amount}
+
+      return newIngredient
+    })
+    console.log("This is probably the issue", ingredientName[0]);
+    return updateInfo(ingredientName[0]) 
+  })
+  // return ingredientQuantity
+}
 
 function addToPantry(event) {
   event.preventDefault();
   const ingredientName = ingredientsData.find(ing => {
     return ing.name === searchIngrName.value
-  });
-  const changeQuantity = userPantry.ingredients.find(amt => {
-    return amt.id === ingredientName.id
   });
   const ingredientQuantity = searchIngrQuantity.value;
   const newIngredient = {"userID": currentUser.id, "ingredientID": ingredientName.id, "ingredientModification": + ingredientQuantity};
@@ -410,7 +414,6 @@ function showUserPantry() {
 }
 
 function renderPantryItems(pantry) {
-  console.log("what is this data", pantry);
   pantryContainer.innerHTML = "";
   pantry.ingredients.forEach((item) => {
     pantryContainer.innerHTML += `<p>${item.quantity} ${item.name}</p>`;
