@@ -342,15 +342,15 @@ function cookRecipe(recipe) {
 
 function removeFromPantry(currentRecipe) {
   const ingredientQuantity = currentRecipe.ingredients.map(recipe => {
-    return recipe.quantity.amount
-  });
-  const ingredientName = currentRecipe.ingredients.map(ing => {
-    return ing.id
-  })
+    const ingredientName = currentRecipe.ingredients.map(ingredient => {
+      const newIngredient = {"userID": currentUser.id, "ingredientID": ingredient.id, "ingredientModification": - recipe.quantity.amount}
 
-  console.log("hello there", ingredientName, ingredientQuantity);
-  const newIngredient = {"userID": currentUser.id, "ingredientID": ingredientName[0], "ingredientModification": - ingredientQuantity[0]};
-  updateInfo(newIngredient);
+      return newIngredient
+    })
+    console.log("This is probably the issue", ingredientName[0]);
+    return updateInfo(ingredientName[0]) 
+  })
+  // return ingredientQuantity
 }
 
 function addToPantry(event) {
