@@ -89,8 +89,9 @@ userTagSelect.addEventListener("change", searchUserRecipesByTag);
 //event handlers go here
 
 const errorMessage = 'Sorry, something went wrong'
-function displayError(errorMessage) {
 
+function displayError(errorMessage) {
+  headerTitle.innerText = `<h2> ${errorMessage} </h2>`
 }
 
 function getAllData() {
