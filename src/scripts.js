@@ -189,7 +189,6 @@ function viewAllRecipes(recipes) {
     newSection.innerHTML = `
         <img tabindex="0" class="image" id="${recipe.id}" src="${recipe.image}">
         <p class="recipe-name"> ${recipe.name} </p>`;
-
     allRecipesContainer.appendChild(newSection);
     const recipeImage = newSection.querySelector(".image");
     recipeImage.addEventListener("click", seeRecipe);
@@ -259,7 +258,6 @@ function renderInstructions(instructions) {
   instructions.forEach((item) => {
     html += `<li>${item.instruction}</li>`;
   });
-
   return `
     <ol>
       <p>Instructions:</p>
@@ -305,7 +303,6 @@ function saveRecipe() {
         <button class="delete-recipe" id="${recipe.id}">Delete Recipe</button>
         <button class="cook-recipe-button" id="${recipe.id}"> Cook Recipe </button>
         <p class="recipe-name"> ${recipe.name} </p>`;
-
     savedRecipeContainer.appendChild(newSection);
     const recipeImage = newSection.querySelector(".image");
     recipeImage.addEventListener("click", seeRecipe);
@@ -341,16 +338,10 @@ function cookRecipe(recipe) {
 };
 
 function removeFromPantry(currentRecipe) {
-  const ingredientQuantity = currentRecipe.ingredients.map(recipe => {
-    const ingredientName = currentRecipe.ingredients.map(ingredient => {
-      const newIngredient = {"userID": currentUser.id, "ingredientID": ingredient.id, "ingredientModification": - recipe.quantity.amount}
-
-      return newIngredient
-    })
-    console.log("This is probably the issue", ingredientName[0]);
-    return updateInfo(ingredientName[0]) 
+  currentRecipe.ingredients.map(ingredient => {
+    const newIngredient = {"userID": currentUser.id, "ingredientID": ingredient.id, "ingredientModification": - ingredient.quantity.amount}
+    return updateInfo(newIngredient)
   })
-  // return ingredientQuantity
 }
 
 function addToPantry(event) {
@@ -443,5 +434,3 @@ function addHidden(element) {
 function removeHidden(element) {
   element.classList.remove("hidden");
 }
-
-export {getAllData};
